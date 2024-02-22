@@ -2,6 +2,8 @@
 """ Console Module """
 import cmd
 import sys
+from uuid import uuid4
+
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -10,6 +12,8 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+from datetime import datetime
+
 
 
 class HBNBCommand(cmd.Cmd):
@@ -23,7 +27,7 @@ class HBNBCommand(cmd.Cmd):
                'State': State, 'City': City, 'Amenity': Amenity,
                'Review': Review
               }
-    dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
+    dot_cmds = ['all', 'count', 'show', 'destroy', 'update', 'create']
     types = {
              'number_rooms': int, 'number_bathrooms': int,
              'max_guest': int, 'price_by_night': int,
@@ -73,7 +77,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] == '{' and pline[-1] == '}' \
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -113,16 +117,46 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, args):
+    def do_create(self, line):
         """ Create an object of any class"""
-        if not args:
+
+        if not line:
             print("** class name missing **")
             return
-        elif args not in HBNBCommand.classes:
+
+        # Split line into args
+        line = str(line)
+        args = line.split(" ")
+
+        # check class arg is in classes list
+        if args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
+
+        # remove classname at args[0]
+        class_name = args[0]
+        other_args = args[1:]
+
+        attrib_dict = {}
+
+        # Split each value in other_args using the = separator
+        for item in other_args:
+            key, value = item.split("=")
+            value = value.replace("_", " ")
+            value = value.replace("\"", "")
+
+            # Check if key is in the class.types dict
+            if key in HBNBCommand.types:
+                value = HBNBCommand.types[key](value)
+            attrib_dict[key] = value
+
+        attrib_dict['created_at'] = datetime.now().isoformat()
+        attrib_dict['updated_at'] = datetime.now().isoformat()
+        attrib_dict['__class__'] = args[0]
+        attrib_dict['id'] = str(uuid4())
+
+        new_instance = HBNBCommand.classes[class_name](**attrib_dict)
+        new_instance.save()
         print(new_instance.id)
         storage.save()
 
@@ -272,7 +306,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] is '\"':  # check for quoted arg
+            if args and args[0] == '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -280,10 +314,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] is not ' ':
+            if not att_name and args[0] != ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] is '\"':
+            if args[2] and args[2][0] == '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg
@@ -298,7 +332,7 @@ class HBNBCommand(cmd.Cmd):
         # iterate through attr names and values
         for i, att_name in enumerate(args):
             # block only runs on even iterations
-            if (i % 2 == 0):
+            if i % 2 == 0:
                 att_val = args[i + 1]  # following item is value
                 if not att_name:  # check for att_name
                     print("** attribute name missing **")
