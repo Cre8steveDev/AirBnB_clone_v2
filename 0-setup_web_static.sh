@@ -53,8 +53,6 @@ link_name="/data/web_static/current"
 sudo ln -s -f "$target_dir" "$link_name"
 
 ##############################################
-# /etc/nginx/sites-enabled/default
-
 # Target configuration file path (replace with your actual file)
 config_file="/etc/nginx/sites-enabled/default"
 
@@ -68,9 +66,6 @@ content="server_name _;\n\ \n\
         index index.html index.htm;\n\
         autoindex off;\n\
     }\n"
-
-# Backup existing configuration (optional)
-#cp -f "$config_file" "$config_file.bak"
 
 # Search and replace the target block
 sudo sed -i "/$target_block/c $content" "$config_file"
