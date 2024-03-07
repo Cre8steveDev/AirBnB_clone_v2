@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# A bash script that sets up a webserver for the deployment
+# of web_static directory
+
+# INSTALL NGINX
+# Check if the program exists - this will return the full path
+command -v nginx
+
+# Check the previous exit status code to check if it exists
+# shellcheck disable=SC2181
+if [ $? -ne 0 ]; then 
+	sudo apt-get -y update
+	sudo apt-get -y install nginx
+	sudo ufw allow "Nginx HTTP"
+	sudo chown -R "$USER":"$USER" /var/www/html/
+	sudo service nginx restart
+else
+	echo "Nginx already installed"
+	echo ""
+fi
+
+##############################################
+##############################################
+# Create Folder Structures if id doesn't alreay exist
+mkdir -p /data/web_static/releases/test /data/web_static/shared
+
+# Check user and group ownership 
+chown -R ubuntu /data/
+chgrp -R ubuntu /data/
+
+##############################################
+##############################################
+
+##############################################
+##############################################
+# Create fake HTML File 
+html_content='<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	Testing Nginix
+</body>
+</html>'
+
+# Copy string content to a file 
+echo "$html_content" |  dd status=none of=/data/web_static/releases/test/index.html
+##############################################
+##############################################
+
+##############################################
+##############################################
+# Create a symbolic link
+target_dir="/data/web_static/releases/test/"
+link_name="/data/web_static/current"
+
+if [[ -L "$link_name" ]]; then
+  rm -f "$link_name"
+fi
+
+# Create the symbolic link
+ln -s "$target_dir" "$link_name"
+
+##############################################
+# /etc/nginx/sites-enabled/default
+
+# Target configuration file path (replace with your actual file)
+config_file="/etc/nginx/sites-enabled/default"
+
+# Target location block to modify (adjust selector if needed)
+target_block="server_name _;"
+
+# Content to insert (replace with your actual domain name)
+content="\n\
+server_name _;\n\ \n\
+    location /hbnb_static {\n\
+        alias /data/web_static/current/;\n\
+        index index.html index.htm;\n\
+        autoindex off;\n\
+    }\n"
+
+# Backup existing configuration (optional)
+cp -f "$config_file" "$config_file.bak"
+
+# Search and replace the target block
+sed -i "/$target_block/c $content" "$config_file"
+
+# Restart Nginx 
+sudo service nginx restart

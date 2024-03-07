@@ -8,8 +8,8 @@ from sqlalchemy.orm import relationship
 
 class Amenity(BaseModel, Base):
     """Definition of the Amenity class to be mapped"""
+    __tablename__ = 'amenities'
     if storage_type == 'db':
-        __tablename__ = 'amenities'
         name = Column(String(128), nullable=False)
     else:
         name = ""
