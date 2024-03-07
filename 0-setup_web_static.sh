@@ -4,7 +4,7 @@
 
 # INSTALL NGINX
 # Check if the program exists - this will return the full path
-command -v nginx
+command -v nginx &> /dev/null
 
 # Check the previous exit status code to check if it exists
 # shellcheck disable=SC2181
@@ -14,9 +14,6 @@ if [ $? -ne 0 ]; then
 	sudo ufw allow "Nginx HTTP"
 	sudo chown -R "$USER":"$USER" /var/www/html/
 	sudo service nginx restart
-else
-	echo "Nginx already installed"
-	echo ""
 fi
 
 ##############################################
@@ -65,8 +62,7 @@ config_file="/etc/nginx/sites-enabled/default"
 target_block="server_name _;"
 
 # Content to insert (replace with your actual domain name)
-content="
-server_name _;\n\ \n\
+content="server_name _;\n\ \n\
     location /hbnb_static {\n\
         alias /data/web_static/current/;\n\
         index index.html index.htm;\n\
