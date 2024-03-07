@@ -29,15 +29,12 @@ sudo chgrp -R ubuntu /data/
 ##############################################
 # Create fake HTML File 
 html_content='<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
-</head>
-<body>
-	Testing Nginix
-</body>
+<html>
+  <head>
+  </head>
+  <body>
+    Holberton School
+  </body>
 </html>'
 
 # Copy string content to a file 
