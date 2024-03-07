@@ -22,14 +22,11 @@ fi
 ##############################################
 ##############################################
 # Create Folder Structures if id doesn't alreay exist
-mkdir -p /data/web_static/releases/test /data/web_static/shared
+sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
 
 # Check user and group ownership 
-chown -R ubuntu /data/
-chgrp -R ubuntu /data/
-
-##############################################
-##############################################
+sudo chown -R ubuntu /data/
+sudo chgrp -R ubuntu /data/
 
 ##############################################
 ##############################################
@@ -47,9 +44,7 @@ html_content='<!DOCTYPE html>
 </html>'
 
 # Copy string content to a file 
-echo "$html_content" |  dd status=none of=/data/web_static/releases/test/index.html
-##############################################
-##############################################
+echo "$html_content" | sudo  dd status=none of=/data/web_static/releases/test/index.html
 
 ##############################################
 ##############################################
@@ -57,12 +52,8 @@ echo "$html_content" |  dd status=none of=/data/web_static/releases/test/index.h
 target_dir="/data/web_static/releases/test/"
 link_name="/data/web_static/current"
 
-if [[ -L "$link_name" ]]; then
-  rm -f "$link_name"
-fi
-
 # Create the symbolic link
-ln -s "$target_dir" "$link_name"
+sudo ln -s -f "$target_dir" "$link_name"
 
 ##############################################
 # /etc/nginx/sites-enabled/default
@@ -74,7 +65,7 @@ config_file="/etc/nginx/sites-enabled/default"
 target_block="server_name _;"
 
 # Content to insert (replace with your actual domain name)
-content="\n\
+content="
 server_name _;\n\ \n\
     location /hbnb_static {\n\
         alias /data/web_static/current/;\n\
@@ -83,10 +74,10 @@ server_name _;\n\ \n\
     }\n"
 
 # Backup existing configuration (optional)
-cp -f "$config_file" "$config_file.bak"
+#cp -f "$config_file" "$config_file.bak"
 
 # Search and replace the target block
-sed -i "/$target_block/c $content" "$config_file"
+sudo sed -i "/$target_block/c $content" "$config_file"
 
 # Restart Nginx 
 sudo service nginx restart
