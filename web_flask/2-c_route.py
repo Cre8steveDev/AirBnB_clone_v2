@@ -19,8 +19,8 @@ def hbnb():
 
 @app.route('/c/<text>', strict_slashes=False)
 def c_route(text):
-	"""Returns a View that displays "C" followed value of text"""
-	return 'C {}'.format(text.replace('_', ' '))
+    """Returns a View that displays "C" followed value of text"""
+    return 'C {}'.format(text.replace('_', ' '))
 
 
 if __name__ == "__main__":
