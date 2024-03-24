@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """A Script that starts a simple Flask Web Application"""
-from flask import Flask, request
+from flask import Flask, request, abort
 
 app = Flask(__name__)
 
@@ -21,6 +21,25 @@ def hbnb():
 def c_route(text):
     """Returns a View that displays "C" followed value of text"""
     return 'C {}'.format(text.replace('_', ' '))
+
+
+@app.route('/python/', defaults={'text': 'is cool'}, strict_slashes=False)
+@app.route('/python/<text>', strict_slashes=False)
+def python_route(text):
+    """Returns a View that displays "Python" followed value of text"""
+    return 'Python {}'.format(text.replace('_', ' '))
+
+
+@app.route('/number/<n>', strict_slashes=False)
+def number_route(n):
+    """Returns a view that displays  'n is a number' only
+    if n is an integer passed on the path"""
+
+    try:
+        num = int(n)
+        return "{} is a number".format(num)
+    except ValueError:
+        abort(404)
 
 
 if __name__ == "__main__":
