@@ -11,8 +11,8 @@ def index():
     return "Hello HBNB!"
 
 
-@app.route('/hbhb', strict_slashes=False)
-def hbnb_route():
+@app.route('/hbnb', strict_slashes=False)
+def hbnb():
     """Returns a View that displays "HBNB" for the /hbnb URL route"""
     return "HBNB"
 
