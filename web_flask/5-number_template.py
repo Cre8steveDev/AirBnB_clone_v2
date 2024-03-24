@@ -2,7 +2,7 @@
 """A Script that starts a simple Flask Web Application"""
 from flask import Flask, request, abort, render_template
 
-app:Flask = Flask(__name__)
+app: Flask = Flask(__name__)
 
 
 @app.route('/', strict_slashes=False)
@@ -41,15 +41,15 @@ def number_route(n):
     except ValueError:
         abort(404)
 
+
 @app.route('/number_template/<n>', strict_slashes=False)
 def number_template(n):
     """Checks for odd and even and then return the value in a template"""
     try:
         num = int(n)
         return render_template('5-number.html', data={"num": num})
-    except:
+    except ValueError:
         abort(404)
-
 
 
 if __name__ == "__main__":
