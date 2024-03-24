@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """A Script that starts a simple Flask Web Application"""
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
@@ -15,6 +15,12 @@ def index():
 def hbnb():
     """Returns a View that displays "HBNB" for the /hbnb URL route"""
     return "HBNB"
+
+
+@app.route('/c/<text>', strict_slashes=False)
+def c_route(text):
+	"""Returns a View that displays "C" followed value of text"""
+	return 'C {}'.format(text.replace('_', ' '))
 
 
 if __name__ == "__main__":
