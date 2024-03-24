@@ -72,7 +72,7 @@ class FileStorage:
             # Delete the key
             del all_objs[found_key]
             self.save()
-            
+
     def close(self):
         """Reloads and deserializes the storage"""
         self.reload()

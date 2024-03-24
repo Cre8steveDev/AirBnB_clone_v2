@@ -16,7 +16,8 @@ class State(BaseModel, Base):
     name = Column(String(128), nullable=False)
 
     if storage_type == "db":
-        cities = relationship("City", backref="state", cascade="all, delete-orphan")
+        cities = relationship("City", backref="state",
+                              cascade="all, delete-orphan")
 
     if storage_type != "db":
         @property
