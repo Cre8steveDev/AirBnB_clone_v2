@@ -47,7 +47,7 @@ def number_template(n):
     """Checks for odd and even and then return the value in a template"""
     try:
         num = int(n)
-        return render_template('5-number.html', data={"num": num})
+        return render_template('5-number.html', data=num)
     except ValueError:
         abort(404)
 
